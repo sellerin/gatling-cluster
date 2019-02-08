@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-job
+spec:
+  completions: 2
+  parallelism: 2
+  template:
+    spec:
+      volumes:
+      - name: gatling-result
+        gcePersistentDisk:
+          pdName: perfresult
+          fsType: ext4
+      containers:
+      - name: main
+        image: eu.gcr.io/iron-inkwell-205415/perf:1.0.0-SNAPSHOT
+        volumeMounts:
+        - name: gatling-result
+          mountPath: /gatling/result
+      restartPolicy: Never
+  backoffLimit: 1
