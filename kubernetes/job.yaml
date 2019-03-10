@@ -14,34 +14,79 @@ spec:
           claimName: nfs
       containers:
       - name: main
-        image: eu.gcr.io/iron-inkwell-205415/perf:1.0.0-SNAPSHOT
+        image: eu.gcr.io/iron-inkwell-205415/perf:latest
         volumeMounts:
             - name: nfs
               mountPath: /gatling-charts-highcharts-bundle-3.0.2/results
       restartPolicy: Never
   backoffLimit: 1
 ---  
-apiVersion: v1
-kind: Pod
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: batch-watcher
 spec:
-  volumes:
+  completions: 1
+  parallelism: 1
+  activeDeadlineSeconds: 40000
+  template:
+    spec:
+      volumes:
       - name: nfs
         persistentVolumeClaim:
           claimName: nfs
-  containers:
-  - image: cfmanteiga/alpine-bash-curl-jq
-    name: watcher
-    command: ["sleep", "9999999"]
-#          command:
-#          - sh
-#          - -c
-#          - 'while true; do echo "Waiting for batch to finish..."; wget http://fortune -q -T 1 -O /dev/null >/dev/null 2>/dev/null && break; sleep 1; done; echo "Service is up! Starting main container."'
-    volumeMounts:
+      containers:
+      - name: watcher
+        image: eu.gcr.io/iron-inkwell-205415/watcher:latest
+#        command: ["sleep"]
+#        args: ["9999999999"]
+        volumeMounts:
+            - name: nfs
+              mountPath: /results
+      restartPolicy: Never
+  backoffLimit: 0
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: static-web
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+  selector:
+    role: static-web
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: static-web
+spec:
+  replicas: 1
+  selector:
+    role: static-web
+  template:
+    metadata:
+      labels:
+        role: static-web
+    spec:
+      containers:
+      - name: static-web
+        image: nginx
+        ports:
+          - name: http
+            containerPort: 80
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /usr/share/nginx/html
+            name: nfs
+      volumes:
         - name: nfs
-          mountPath: /gatling/results
-    
+          persistentVolumeClaim:
+            claimName: nfs
+
 #init container
 #rm -rf gatling/results/*
 
@@ -59,3 +104,6 @@ spec:
 #curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status | jq '.status.active'
 #retourne 2 ou null
 #curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status | jq '.status.succeeded'
+
+#pour avoir l'adresse ip du serveur web
+#kubectl get svc

@@ -1,5 +1,7 @@
 FROM openjdk:8u181-jdk-alpine3.8
 
+ENV GATLING_HOME=/gatling-charts-highcharts-bundle-3.0.2
+
 COPY entrypoint.sh .
 COPY gatling-charts-highcharts-bundle-3.0.2-bundle.zip .
 RUN unzip gatling-charts-highcharts-bundle*.zip \
