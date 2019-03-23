@@ -27,19 +27,19 @@ aggregate () {
   cd $GATLING_HOME/bin
   ./gatling.sh -ro reports
 
-  if [ ! -d "/results/reports" ]
+  if [ ! -d "/aggregated-reports/reports" ]
   then
-    mkdir /results/reports
+    mkdir /aggregated-reports/reports
   fi
 
-  if [ -d "/results/reports/$simulation_name" ]
+  if [ -d "/aggregated-reports/reports/$simulation_name" ]
   then
-    rm -rf /results/reports/$simulation_name/*
-    rmdir /results/reports/$simulation_name
+    rm -rf /aggregated-reports/reports/$simulation_name/*
+    rmdir /aggregated-reports/reports/$simulation_name
   fi
 
-  mkdir /results/reports/$simulation_name
-  cp -a $GATLING_HOME/results/reports/.  /results/reports/$simulation_name/
+  mkdir /aggregated-reports/reports/$simulation_name
+  cp -a $GATLING_HOME/results/reports/.  /aggregated-reports/reports/$simulation_name/
 
   nginx_ip=$(curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/api/v1/namespaces/default/services/static-web | jq -r '.status.loadBalancer.ingress[0].ip')
   echo "Report created. Open it http://$nginx_ip/reports/$simulation_name"

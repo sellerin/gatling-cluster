@@ -12,12 +12,28 @@ spec:
       - name: nfs
         persistentVolumeClaim:
           claimName: nfs
+      - name: user-files
+        gitRepo:
+          repository: https://github.com/sellerin/gatling-cluster.git
+          revision: master
+          directory: user-files
+      initContainers:
+      - name: prepare-test
+        image: busybox
+        command: ['sh', '-c', 'rm -rf /exports/results/*; mkdir -p /exports/results;']
+        volumeMounts:
+            - name: nfs
+              mountPath: /results
       containers:
       - name: main
         image: eu.gcr.io/iron-inkwell-205415/perf:latest
         volumeMounts:
             - name: nfs
               mountPath: /gatling-charts-highcharts-bundle-3.0.2/results
+              subPath: results
+            - name: user-files
+              mountPath: /gatling-charts-highcharts-bundle-3.0.2/user-files
+              readOnly: true
       restartPolicy: Never
   backoffLimit: 1
 ---  
@@ -43,6 +59,9 @@ spec:
         volumeMounts:
             - name: nfs
               mountPath: /results
+              subPath: results
+            - name: nfs
+              mountPath: /aggregated-reports
       restartPolicy: Never
   backoffLimit: 0
 ---
@@ -87,23 +106,11 @@ spec:
           persistentVolumeClaim:
             claimName: nfs
 
-#init container
-#rm -rf gatling/results/*
-
 
 #desactiver rbac et donner tous les droits a tous les services
 #kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --group=system:serviceaccounts
 #export CURL_CA_BUNDLE=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 #TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-
-#retourne le nombre de job a attendre
-#curl -H "Authorization: Bearer $TOKEN"  -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status | jq '.spec.completions'
-#retourne 2 ou null
-#curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status | jq '.status.failed'
-#retourne 2 ou null
-#curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status | jq '.status.active'
-#retourne 2 ou null
-#curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status | jq '.status.succeeded'
 
 #pour avoir l'adresse ip du serveur web
 #kubectl get svc
