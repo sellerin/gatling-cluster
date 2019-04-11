@@ -9,6 +9,5 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain    
   nfs:
-    # FIXME: use the right IP
-    server: 10.35.245.164
+    server: nfs-server.default.svc.cluster.local
     path: "/"
