@@ -1,0 +1,9 @@
+commonLabels:
+  app: gatling-cluster
+nameSuffix: "-001"
+resources:
+- job.yaml
+patchesStrategicMerge:
+- set_parallelism.yaml
+- set_simulation_name.yaml
+- set_gitrepo.yaml
