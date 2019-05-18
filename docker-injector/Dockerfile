@@ -1,5 +1,4 @@
 FROM openjdk:11-jre-slim
-#FROM azul/zulu-openjdk-alpine:11
 
 ENV GATLING_HOME=/gatling-charts-highcharts-bundle-3.0.2
 

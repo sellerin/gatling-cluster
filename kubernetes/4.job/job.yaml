@@ -19,10 +19,10 @@ spec:
       initContainers:
       - name: prepare-test
         image: busybox
-        command: ['sh', '-c', 'rm -rf /exports/results/*; mkdir -p /exports/results;']
+        command: ['sh', '-c', 'if [ -d /exports/results/b8103eb1-e7dc-4739-8bb1-dc11ee855ded ]; then rm -Rf /exports/results/b8103eb1-e7dc-4739-8bb1-dc11ee855ded; fi; mkdir -p /exports/results/b8103eb1-e7dc-4739-8bb1-dc11ee855ded;']
         volumeMounts:
             - name: nfs
-              mountPath: /results
+              mountPath: /exports
       containers:
       - name: main
         image: eu.gcr.io/iron-inkwell-205415/perf:latest
@@ -30,10 +30,12 @@ spec:
         - name: SIMULATION_NAME
 #          value: "computerdatabase.BasicSimulation"
           value: "c2gwebaws.C2gwebSimulation"
+        - name: SIMULATION_ID
+          value: "b8103eb1-e7dc-4739-8bb1-dc11ee855ded"
         volumeMounts:
             - name: nfs
               mountPath: /gatling-charts-highcharts-bundle-3.0.2/results
-              subPath: results
+              subPath: results/b8103eb1-e7dc-4739-8bb1-dc11ee855ded
             - name: user-files
               mountPath: /gatling-charts-highcharts-bundle-3.0.2/user-files
               readOnly: true
@@ -60,10 +62,13 @@ spec:
         image: eu.gcr.io/iron-inkwell-205415/watcher:latest
 #        command: ["sleep"]
 #        args: ["9999999999"]
+        env:
+        - name: SIMULATION_ID
+          value: "b8103eb1-e7dc-4739-8bb1-dc11ee855ded"
         volumeMounts:
             - name: nfs
               mountPath: /results
-              subPath: results
+              subPath: results/b8103eb1-e7dc-4739-8bb1-dc11ee855ded
             - name: nfs
               mountPath: /aggregated-reports
       restartPolicy: Never

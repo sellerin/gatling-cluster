@@ -6,18 +6,13 @@ aggregate () {
 
   rm -rf $GATLING_HOME/results/*
   mkdir $GATLING_HOME/results/reports
-
+  simulation_name="$SIMULATION_ID"
+  
   cpt="1"
   for d in /results/*/ ; do
 
     if [ -e $d/simulation.log ]
     then
-      if [ "$cpt" == "1" ]
-      then
-        [[ "$d" =~ ^.*/(.*-.*)/$ ]]
-        simulation_name="${BASH_REMATCH[1]}"
-      fi
-
       cp $d/simulation.log $GATLING_HOME/results/reports/simulation-$cpt.log
       cpt=$((cpt+1))
     fi
@@ -48,8 +43,8 @@ aggregate () {
 
 START=$SECONDS
 
-while : ; do
-  status=$(curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job/status)
+while : ; do  
+  status=$(curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job-${SIMULATION_ID}/status)
   nbcompletions=$(echo "$status" | jq '.spec.completions')
   nbsucceed=$(echo "$status" | jq '.status.succeeded')
   nbfailed=$(echo "$status" | jq '.status.failed')

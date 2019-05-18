@@ -1,8 +1,7 @@
 FROM eu.gcr.io/iron-inkwell-205415/perf:latest
 
-RUN apk add --update \
-    curl jq bash \
-    && rm -rf /var/cache/apk/*
+RUN apt-get update && \
+    apt-get install -y curl jq
 
 COPY entrypoint.sh .
 
