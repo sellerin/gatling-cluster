@@ -30,6 +30,12 @@ spec:
         - name: SIMULATION_NAME
 #          value: "computerdatabase.BasicSimulation"
           value: "c2gwebaws.C2gwebSimulation"
+        - name: NBUSERS
+          value: "2"
+        - name: RAMP
+          value: "10"
+        - name: DURATION
+          value: "300"
         - name: SIMULATION_ID
           value: "b8103eb1-e7dc-4739-8bb1-dc11ee855ded"
         volumeMounts:

@@ -9,7 +9,8 @@ RUN unzip gatling-charts-highcharts-bundle*.zip \
 
 #ENV SIMULATION_NAME=computerdatabase.BasicSimulation
 ENV SIMULATION_NAME=c2gwebaws.C2gwebSimulation
-
-ADD c2gwebaws /gatling-charts-highcharts-bundle-3.0.2/user-files/simulations
+ENV NBUSERS=2
+ENV RAMP=10
+ENV DURATION=300
 
 ENTRYPOINT ["/entrypoint.sh"]
