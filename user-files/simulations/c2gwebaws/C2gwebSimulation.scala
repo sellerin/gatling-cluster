@@ -8,7 +8,7 @@ class C2gwebSimulation extends Simulation {
 
   val nbUsers = Integer.getInteger("users", 1)
   val myRamp = java.lang.Long.getLong("ramp", 0L)
-  val myDuration = java.lang.Long.getLong("duration", 0L)
+  val myDuration = java.lang.Long.getLong("duration", 20L)
 
   val httpProtocol = http
     .baseUrl("https://c2gweb-dev.renault.com") // Here is the root for all relative URLs
@@ -21,7 +21,7 @@ class C2gwebSimulation extends Simulation {
   val headers_10 = Map("Content-Type" -> "application/x-www-form-urlencoded") // Note the headers specific to a given request
 
   val scn = scenario("Scenario Name").during(myDuration) {
-    .exec(http("request_1")
+    exec(http("request_1")
       .get("/se/pub/docs"))
     .pause(2)
     .exec(http("request_2")
@@ -38,5 +38,5 @@ class C2gwebSimulation extends Simulation {
     .pause(2)
   }
 
-  setUp(scn.inject(rampUsers(nbUsers) over (myRamp seconds)).protocols(httpProtocol))
+  setUp(scn.inject(rampUsers(nbUsers) during (myRamp seconds)).protocols(httpProtocol))
 }
