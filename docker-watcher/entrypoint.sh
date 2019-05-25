@@ -1,6 +1,7 @@
 #!/bin/bash
 export CURL_CA_BUNDLE=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
 aggregate () {
 
@@ -36,15 +37,16 @@ aggregate () {
   mkdir /aggregated-reports/reports/$simulation_name
   cp -a $GATLING_HOME/results/reports/.  /aggregated-reports/reports/$simulation_name/
 
-  nginx_ip=$(curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/api/v1/namespaces/default/services/static-web | jq -r '.status.loadBalancer.ingress[0].ip')
+  nginx_ip=$(curl -H "Authorization: Bearer $TOKEN" -s https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/api/v1/namespaces/$NAMESPACE/services/static-web | jq -r '.status.loadBalancer.ingress[0].ip')
   echo "Report created. Open it http://$nginx_ip/reports/$simulation_name"
 
 }
 
 START=$SECONDS
+TIMEOUT=$(($DURATION + 120))
 
 while : ; do  
-  status=$(curl -H "Authorization: Bearer $TOKEN" -s https://kubernetes/apis/batch/v1/namespaces/default/jobs/batch-job-${SIMULATION_ID}/status)
+  status=$(curl -H "Authorization: Bearer $TOKEN" -s https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/apis/batch/v1/namespaces/$NAMESPACE/jobs/batch-job-${SIMULATION_ID}/status)
   nbcompletions=$(echo "$status" | jq '.spec.completions')
   nbsucceed=$(echo "$status" | jq '.status.succeeded')
   nbfailed=$(echo "$status" | jq '.status.failed')
@@ -69,7 +71,7 @@ while : ; do
 
   END=$SECONDS
   DIFF=$(( END - START ))
-  if [ "$DIFF" -gt "300" ]
+  if [ "$DIFF" -gt "$TIMEOUT" ]
   then
     echo "BATCH TIMEOUT AFTER 300s"
     exit 0

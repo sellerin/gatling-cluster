@@ -2,6 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: batch-watcher-role
+  namespace: dev
 rules:
 - apiGroups: [""]
   verbs: ["get", "list"]
@@ -14,7 +15,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: batch-watcher-rb
-  namespace: default
+  namespace: dev
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -22,4 +23,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: default
+  namespace: dev

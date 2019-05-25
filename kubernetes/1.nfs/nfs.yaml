@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: nfs-pv-provisioning-demo
+  namespace: dev
   labels:
     demo: nfs-pv-provisioning
 spec:
@@ -14,6 +15,7 @@ apiVersion: v1
 kind: ReplicationController
 metadata:
   name: nfs-server
+  namespace: dev
 spec:
   replicas: 1
   selector:
@@ -47,6 +49,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: nfs-server
+  namespace: dev
 spec:
   ports:
     - name: nfs
@@ -62,6 +65,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: nfs
+  namespace: dev
 spec:
   capacity:
     storage: 1Gi
@@ -69,13 +73,14 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain    
   nfs:
-    server: nfs-server.default.svc.cluster.local
+    server: nfs-server.dev.svc.cluster.local
     path: "/"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: nfs
+  namespace: dev
 spec:
   accessModes:
     - ReadWriteMany

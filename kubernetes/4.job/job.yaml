@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: batch-job
+  namespace: dev
 spec:
   completions: 2
   parallelism: 2
@@ -53,6 +54,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: batch-watcher
+  namespace: dev
 spec:
   completions: 1
   parallelism: 1
@@ -90,6 +92,9 @@ spec:
 
 #pour avoir le droit de créer des roles
 #kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=sellerin@gmail.com
+
+#pour setter un namespace
+#kubectl config set-context --current --namespace=dev
 
 #pour customiser
 #kubectl kustomize .
