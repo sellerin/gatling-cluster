@@ -43,7 +43,7 @@ aggregate () {
 }
 
 START=$SECONDS
-TIMEOUT=$(($DURATION + 120))
+TIMEOUT=$(($DURATION + 180))
 
 while : ; do  
   status=$(curl -H "Authorization: Bearer $TOKEN" -s https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/apis/batch/v1/namespaces/$NAMESPACE/jobs/batch-job-${SIMULATION_ID}/status)
