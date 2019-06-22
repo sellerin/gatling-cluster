@@ -103,7 +103,12 @@ spec:
 #https://godoc.org/k8s.io/api/batch/v1#JobSpec
 
 #TODO
-#GitRepo represents a git repository at a particular revision.
-#DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an
-#EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir
-#into the Pod's container.
+#créer un ServiceAccount pour watcher et pas utiliser le service account par défaut
+
+#logs init container
+kubectl -n dev logs <pod-name> -c prepare-test
+kubectl -n dev logs <pod-name> -c git-clone
+
+#delete job
+kubectl -n dev get jobs
+kubectl -n dev delete jobs <job-name>
