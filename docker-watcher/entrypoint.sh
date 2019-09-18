@@ -43,7 +43,7 @@ aggregate () {
 }
 
 START=$SECONDS
-TIMEOUT=$(($DURATION + 180))
+TIMEOUT=$(($DURATION + 3600))
 
 while : ; do  
   status=$(curl -H "Authorization: Bearer $TOKEN" -s https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/apis/batch/v1/namespaces/$NAMESPACE/jobs/batch-job-${SIMULATION_ID}/status)
@@ -73,7 +73,7 @@ while : ; do
   DIFF=$(( END - START ))
   if [ "$DIFF" -gt "$TIMEOUT" ]
   then
-    echo "BATCH TIMEOUT AFTER 300s"
+    echo "BATCH TIMEOUT AFTER $TIMEOUTs"
     exit 0
   fi
 done
