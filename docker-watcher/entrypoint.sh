@@ -28,6 +28,11 @@ aggregate () {
     mkdir /aggregated-reports/reports
   fi
 
+  if [ ! -d "/aggregated-reports/download" ]
+  then
+    mkdir /aggregated-reports/download
+  fi
+
   if [ -d "/aggregated-reports/reports/$simulation_name" ]
   then
     rm -rf /aggregated-reports/reports/$simulation_name/*
@@ -37,9 +42,11 @@ aggregate () {
   mkdir /aggregated-reports/reports/$simulation_name
   cp -a $GATLING_HOME/results/reports/.  /aggregated-reports/reports/$simulation_name/
 
+  zip -r /aggregated-reports/download/$simulation_name.zip $GATLING_HOME/results/reports
+
   nginx_ip=$(curl -H "Authorization: Bearer $TOKEN" -s https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/api/v1/namespaces/$NAMESPACE/services/static-web | jq -r '.status.loadBalancer.ingress[0].ip')
   echo "Report created. Open it http://$nginx_ip/reports/$simulation_name"
-
+  echo "Report created. Download it http://$nginx_ip/download/$simulation_name.zip"
 }
 
 START=$SECONDS
