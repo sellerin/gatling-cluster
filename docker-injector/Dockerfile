@@ -11,6 +11,7 @@ RUN apt-get update && \
 
 #ENV SIMULATION_NAME=computerdatabase.BasicSimulation
 ENV SIMULATION_NAME=c2gwebaws.C2gwebSimulation
+ENV DATA='{"param1", "value1"}'
 ENV NBUSERS=2
 ENV RAMP=10
 ENV DURATION=300
